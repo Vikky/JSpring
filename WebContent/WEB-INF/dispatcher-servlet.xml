@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+xmlns:p="http://www.springframework.org/schema/p">
+
+<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+<property name="interceptors">
+	<list>	<ref local="localeChangeInterceptor"/>
+	</list>
+</property>
+<property name="urlMap">
+ <map> 
+	<entry key="/login.htm"> <ref bean="helloController"/></entry>	
+	<entry key="/hello.htm"> <ref bean="helloController"/></entry>
+	<entry key="/priceincrease.htm"> <ref bean="priceIncrease"/></entry>		
+ </map>
+</property>
+</bean>
+
+<bean id="helloController" class="com.HelloWorldController">
+	<property name="productManager" ref="productManager" />
+</bean>
+
+<bean id="productManager"  class="com.PriceIncrease" >
+	<property name="products">
+		<list>
+			<ref bean="product1" ></ref>
+			<ref bean="product2" ></ref>
+			<ref bean="product3" ></ref>
+		</list>	
+	</property>
+</bean>
+
+<bean id="product1" class="com.model.Product">
+	<property name="desc" value="Guitar"></property>
+	<property name="price" value="10000"></property>
+</bean>
+
+<bean id="product2" class="com.model.Product">
+	<property name="desc" value="Violin"></property>
+	<property name="price" value="1000"></property>
+</bean>
+
+<bean id="product3" class="com.model.Product">
+	<property name="desc" value="Sitar"></property>
+	<property name="price" value="100"></property>
+</bean>
+
+<bean name="/hello.htm" class="com.HelloWorldController">
+        <property name="productManager" ref="productManager"/>
+    </bean>
+
+ <bean id="priceIncrease" class="com.PriceIncreaseFormController">
+        <property name="sessionForm" value="true"/>
+        <property name="commandName" value="priceIncrement"/>
+        <property name="commandClass" value="com.model.PriceIncrement"/>
+        <property name="validator">
+            <bean class="com.validator.PriceIncreaseValidator"/>
+        </property>
+        <property name="formView" value="priceincrease"/>
+        <property name="successView" value="hello.htm"/>
+        <property name="productManager" ref="productManager"/>
+ </bean>
+
+<!-- Bean definition for pulling properties from a defined properties file -->
+<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="message"/>
+</bean>
+
+ <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	<property name="paramName" value="hl"/>
+</bean>
+
+<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+
+<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+<property name="prefix" value="/WEB-INF/jsp/"></property>
+<property name="suffix" value=".jsp"> </property>
+
+</bean>
+
+<!-- 
+ database implementation 
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName"><value>java:comp/env/jdbc/devdb</value></property>
+	</bean>
+
+-->
+
+
+</beans>
